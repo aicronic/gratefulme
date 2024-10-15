@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gratitude Journal Settings</title>
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        body {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .setting-item {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Settings</h1>
+    <div class="setting-item">
+        <label for="reminder-time">Daily Reminder Time:</label>
+        <input type="time" id="reminder-time">
+    </div>
+    <div class="setting-item">
+        <label for="font-select">Font:</label>
+        <select id="font-select">
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="'Courier New', monospace">Courier New</option>
+        </select>
+    </div>
+    <div class="setting-item">
+        <label for="reminders-toggle">Daily Reminders:</label>
+        <input type="checkbox" id="reminders-toggle" checked>
+    </div>
+    <button id="save-settings">Save Settings</button>
+    <script src="utils.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gratitude Journal Entries</title>
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        body {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #search-container {
+            margin-bottom: 20px;
+        }
+        #entries-container {
+            margin-bottom: 20px;
+        }
+        .entry {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #pagination {
+            display: flex;
+            justify-content: center;
+        }
+        #pagination button {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gratitude Journal Entries</h1>
+    <div id="stats-container">
+        <p>Total Entries: <span id="total-entries">0</span></p>
+        <p>Longest Streak: <span id="longest-streak">0</span> days</p>
+        <p>Average Mood: <span id="average-mood">-</span></p>
+    </div>
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Search entries...">
+        <button id="search-button">Search</button>
+    </div>
+    <div id="entries-container"></div>
+    <div id="pagination">
+        <button id="prev-page">Previous</button>
+        <span id="page-info"></span>
+        <button id="next-page">Next</button>
+    </div>
+    <button id="export-pdf">Export to PDF</button>
+    <script src="jspdf.umd.min.js"></script>
+    <script src="utils.js"></script>
+    <script src="journal.js"></script>
+</body>
+</html>

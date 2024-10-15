@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gratitude Journal</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div id="popup-container">
+        <h1>Gratitude Journal</h1>
+        <div id="quote-container">
+            <p id="daily-quote"></p>
+        </div>
+        <div id="entry-container">
+            <textarea id="journal-entry" placeholder="What are you grateful for today?" maxlength="500"></textarea>
+            <p id="word-count">0 / 100 words</p>
+        </div>
+        <div id="mood-container">
+            <p>How do you feel today?</p>
+            <div id="mood-selector">
+                <!-- Emoji mood selectors will be inserted here by JavaScript -->
+            </div>
+        </div>
+        <button id="save-entry">Save Entry</button>
+        <div id="stats-container">
+            <p>Current streak: <span id="current-streak">0</span> days</p>
+        </div>
+        <button id="view-journal">View Journal</button>
+        <button id="open-settings">Settings</button>
+    </div>
+    <script src="utils.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
