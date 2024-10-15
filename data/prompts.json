@@ -1,17 +1,48 @@
-[
-    {
-      "text": "What are you grateful for today?"
-    },
-    {
-      "text": "Write about a challenging experience and what you learned from it."
-    },
-    {
-      "text": "Describe a moment when you felt truly happy and fulfilled."
-    },
-    {
-      "text": "What's one thing you're looking forward to in the coming days or weeks?"
-    },
-    {
-      "text": "Write about a person who inspires you and why."
-    }
-  ]
+{ "prompts":[
+  {
+    "text": "What are you grateful for today?"
+  },
+  {
+    "text": "Write about a challenging experience and what you learned from it."
+  },
+  {
+    "text": "Describe a moment when you felt truly happy and fulfilled."
+  },
+  {
+    "text": "What's one thing you're looking forward to in the coming days or weeks?"
+  },
+  {
+    "text": "Write about a person who inspires you and why."
+  },
+  {
+    "text": "If you could change one thing about yourself, what would it be and why?"
+  },
+  {
+    "text": "What is your biggest dream or aspiration in life?"
+  },
+  {
+    "text": "Write a letter to your future self, sharing your thoughts and hopes for the future."
+  },
+  {
+    "text": "What is a lesson you've learned recently that has had a significant impact on your life?"
+  },
+  {
+    "text": "Describe a time when you overcame a fear or obstacle."
+  },
+  {
+    "text": "What is your biggest regret, and what have you learned from it?"
+  },
+  {
+    "text": "Write a poem or short story about a personal experience."
+  },
+  {
+    "text": "If you could have any superpower, what would it be and why?"
+  },
+  {
+    "text": "What is your biggest fear, and how do you cope with it?"
+  },
+  {
+    "text": "Describe a time when you felt particularly proud of yourself."
+  }
+]
+}

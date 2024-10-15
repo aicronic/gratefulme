@@ -59,6 +59,18 @@ document.addEventListener('DOMContentLoaded', function() {
             chrome.storage.sync.set({unsavedEntry});
         }
     }, 5000);
+
+function loadRandomPrompt(elements) {
+    fetch(chrome.runtime.getURL('data/prompts.json'))
+        .then(response => response.json())
+        .then(data => {
+            const prompts = data.prompts;
+            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            elements.journalEntry.placeholder = randomPrompt.text;
+        })
+        .catch(error => console.error('Error loading prompts:', error));
+}
+loadRandomPrompt(elements);
 });
 
 function setTheme() {
@@ -209,3 +221,4 @@ function getRandomQuote() {
             });
     });
 }
+
