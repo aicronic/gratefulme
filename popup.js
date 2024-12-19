@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', function() {
         loadUnsavedEntry(elements);
     }
 
-    // Auto-save unsaved entry every 5 seconds
+    // Auto-save unsaved entry every 15 seconds instead of 5
     setInterval(() => {
         if (elements.journalEntry) {
             const unsavedEntry = elements.journalEntry.value;
             chrome.storage.sync.set({unsavedEntry});
         }
-    }, 5000);
+    }, 15000);
 
 function loadRandomPrompt(elements) {
     fetch(chrome.runtime.getURL('data/prompts.json'))

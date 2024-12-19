@@ -81,27 +81,79 @@ document.addEventListener('DOMContentLoaded', function() {
         // Implement longest streak and average mood calculations
     }
 
-    function exportToPdf() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        let yOffset = 10;
+    async function exportToPdf() {
+        try {
+            const exportButton = document.getElementById('export-pdf');
+            exportButton.disabled = true;
+            exportButton.textContent = 'Preparing PDF...';
 
-        allEntries.forEach((entry, index) => {
-            if (yOffset > 280) {
-                doc.addPage();
-                yOffset = 10;
+            // Dynamically load jsPDF only when needed
+            if (typeof window.jspdf === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'jspdf.umd.min.js';
+                script.async = true;
+                
+                await new Promise((resolve, reject) => {
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('Failed to load PDF generator'));
+                    document.head.appendChild(script);
+                });
             }
 
-            doc.setFontSize(12);
-            doc.text(new Date(entry.date).toLocaleDateString(), 10, yOffset);
-            yOffset += 10;
+            // Wait a brief moment to ensure jsPDF is fully initialized
+            await new Promise(resolve => setTimeout(resolve, 100));
 
-            doc.setFontSize(10);
-            const splitText = doc.splitTextToSize(entry.entry, 190);
-            doc.text(splitText, 10, yOffset);
-            yOffset += splitText.length * 5 + 10;
-        });
-
-        doc.save('gratitude_journal.pdf');
+            // Create new PDF document
+            const doc = new window.jspdf.jsPDF();
+            
+            // Get all entries for export
+            chrome.storage.sync.get(['entries'], function(result) {
+                const entries = result.entries || [];
+                let yPos = 20;
+                
+                doc.setFontSize(20);
+                doc.text('Gratitude Journal', 105, yPos, { align: 'center' });
+                doc.setFontSize(12);
+                
+                entries.forEach((entry, index) => {
+                    if (yPos > 270) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    const date = new Date(entry.date).toLocaleDateString();
+                    doc.setFont(undefined, 'bold');
+                    yPos += 10;
+                    doc.text(date, 20, yPos);
+                    doc.setFont(undefined, 'normal');
+                    
+                    // Split long entries into multiple lines
+                    const lines = doc.splitTextToSize(entry.entry, 170);
+                    yPos += 7;
+                    doc.text(lines, 20, yPos);
+                    yPos += (lines.length * 7) + 5;
+                    
+                    if (entry.mood) {
+                        doc.text(`Mood: ${entry.mood}`, 20, yPos);
+                        yPos += 10;
+                    }
+                });
+                
+                // Save the PDF
+                doc.save('gratitude-journal.pdf');
+                
+                // Reset button state
+                exportButton.disabled = false;
+                exportButton.textContent = 'Export to PDF';
+            });
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            const exportButton = document.getElementById('export-pdf');
+            exportButton.disabled = false;
+            exportButton.textContent = 'Export Failed - Try Again';
+            
+            // Show error to user
+            alert('Failed to generate PDF. Please try again. If the problem persists, check your internet connection.');
+        }
     }
 });
