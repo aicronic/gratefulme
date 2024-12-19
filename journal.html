@@ -14,22 +14,114 @@
         }
         #search-container {
             margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
         }
         #entries-container {
             margin-bottom: 20px;
         }
         .entry {
             margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 15px;
+            border: 1px solid #E1BEE7;
+            border-radius: 8px;
+            position: relative;
+            background-color: #FFF;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .entry:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .delete-entry {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: transparent;
+            color: #E91E63;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+        .delete-entry:hover {
+            opacity: 1;
+            background-color: rgba(233, 30, 99, 0.1);
+            transform: scale(1.1);
         }
         #pagination {
             display: flex;
             justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
-        #pagination button {
-            margin: 0 5px;
+        #delete-all-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        #delete-all {
+            background-color: #E91E63;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.2s;
+        }
+        #delete-all:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #FFF;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        .confirm-delete {
+            background-color: #E91E63;
+            color: white;
+        }
+        .cancel-delete {
+            background-color: #9C27B0;
+            color: white;
         }
     </style>
 </head>
@@ -44,6 +136,9 @@
         <input type="text" id="search-input" placeholder="Search entries...">
         <button id="search-button">Search</button>
     </div>
+    <div id="delete-all-container">
+        <button id="delete-all">Delete All Entries</button>
+    </div>
     <div id="entries-container"></div>
     <div id="pagination">
         <button id="prev-page">Previous</button>
@@ -51,6 +146,20 @@
         <button id="next-page">Next</button>
     </div>
     <button id="export-pdf">Export to PDF</button>
+
+    <!-- Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Delete</h2>
+            <p>Are you sure you want to delete all entries? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="confirm-delete">Delete All</button>
+                <button class="cancel-delete">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="jspdf.umd.min.js"></script>
     <script src="utils.js"></script>
     <script src="journal.js"></script>
 </body>

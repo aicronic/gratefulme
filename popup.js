@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const elements = {
         journalEntry: document.getElementById('journal-entry'),
         wordCount: document.getElementById('word-count'),
@@ -11,16 +11,20 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Load and display daily quote
-    displayDailyQuote(elements);
+    if (elements.quoteContainer) {
+        const quote = await appUtils.quotes.getRandomQuote();
+        elements.quoteContainer.textContent = `"${quote.text}" - ${quote.author}`;
+    }
 
     // Load and display current streak
-    loadStreak(elements);
+    if (elements.currentStreak) {
+        const { streak = 0 } = await appUtils.storage.get(['streak']);
+        elements.currentStreak.textContent = streak;
+    }
 
     // Set up mood selector
     if (elements.moodSelector) {
         setupMoodSelector(elements.moodSelector);
-    } else {
-        console.warn('Mood selector element not found');
     }
 
     // Word count
@@ -30,17 +34,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Save entry
     if (elements.saveEntryBtn && elements.journalEntry) {
-        elements.saveEntryBtn.addEventListener('click', () => saveEntry(elements));
+        elements.saveEntryBtn.addEventListener('click', async () => {
+            const entry = {
+                date: new Date().toISOString(),
+                entry: elements.journalEntry.value,
+                mood: elements.moodSelector ? elements.moodSelector.querySelector('.selected').textContent : null
+            };
+
+            const saved = await appUtils.storage.saveEntry(entry);
+            if (saved) {
+                elements.journalEntry.value = '';
+                updateWordCount(elements);
+                elements.saveEntryBtn.textContent = 'Saved!';
+                setTimeout(() => {
+                    elements.saveEntryBtn.textContent = 'Save Entry';
+                }, 2000);
+            } else {
+                alert('Failed to save entry. Please try again.');
+            }
+        });
     }
 
-    // View journal
+    // Navigation buttons
     if (elements.viewJournalBtn) {
         elements.viewJournalBtn.addEventListener('click', () => {
             chrome.tabs.create({url: 'journal.html'});
         });
     }
 
-    // Open settings
     if (elements.openSettingsBtn) {
         elements.openSettingsBtn.addEventListener('click', () => {
             chrome.tabs.create({url: 'settings.html'});
@@ -49,29 +70,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load any unsaved entry
     if (elements.journalEntry) {
-        loadUnsavedEntry(elements);
+        const { unsavedEntry = '' } = await appUtils.storage.get(['unsavedEntry']);
+        elements.journalEntry.value = unsavedEntry;
+        updateWordCount(elements);
     }
 
-    // Auto-save unsaved entry every 15 seconds instead of 5
-    setInterval(() => {
+    // Auto-save unsaved entry every 15 seconds
+    setInterval(async () => {
         if (elements.journalEntry) {
-            const unsavedEntry = elements.journalEntry.value;
-            chrome.storage.sync.set({unsavedEntry});
+            await appUtils.storage.set({ unsavedEntry: elements.journalEntry.value });
         }
     }, 15000);
 
-function loadRandomPrompt(elements) {
-    fetch(chrome.runtime.getURL('data/prompts.json'))
-        .then(response => response.json())
-        .then(data => {
-            const prompts = data.prompts;
-            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-            elements.journalEntry.placeholder = randomPrompt.text;
-        })
-        .catch(error => console.error('Error loading prompts:', error));
-}
-loadRandomPrompt(elements);
+    // Load random prompt
+    if (elements.journalEntry) {
+        const prompt = await appUtils.prompts.getRandomPrompt();
+        elements.journalEntry.placeholder = prompt.text;
+    }
 });
+
+// Helper functions
+function updateWordCount(elements) {
+    const WORD_LIMIT = 100;
+    const words = elements.journalEntry.value.trim().split(/\s+/).filter(Boolean).length;
+    elements.wordCount.textContent = `${words}/${WORD_LIMIT} words`;
+    
+    // Optional: Disable save button if over limit
+    if (elements.saveEntryBtn) {
+        elements.saveEntryBtn.disabled = words > WORD_LIMIT;
+    }
+}
+
+function setupMoodSelector(moodSelector) {
+    const moods = ['😊', '😌', '😔', '😤', '😴'];
+    moodSelector.innerHTML = ''; // Clear existing content
+    moods.forEach(mood => {
+        const span = document.createElement('span');
+        span.textContent = mood;
+        span.classList.add('mood-emoji');
+        span.addEventListener('click', () => selectMood(mood, span));
+        moodSelector.appendChild(span);
+    });
+}
+
+function selectMood(mood, element) {
+    // Remove 'selected' class from all mood emojis
+    const allMoods = element.parentElement.getElementsByClassName('mood-emoji');
+    Array.from(allMoods).forEach(moodElement => {
+        moodElement.classList.remove('selected');
+    });
+    
+    // Add 'selected' class to clicked mood
+    element.classList.add('selected');
+}
 
 function setTheme() {
     const currentHour = new Date().getHours();
@@ -96,34 +147,6 @@ function loadStreak(elements) {
             elements.currentStreak.textContent = result.streak || 0;
         });
     }
-}
-
-function setupMoodSelector(moodSelector) {
-    const moods = ['😄', '😊', '😐', '😔', '😢'];
-    moods.forEach(mood => {
-        const span = document.createElement('span');
-        span.textContent = mood;
-        span.classList.add('mood-emoji');
-        span.addEventListener('click', () => selectMood(mood, span));
-        moodSelector.appendChild(span);
-    });
-}
-
-function selectMood(mood, element) {
-    console.log('Selected mood:', mood);
-    // Remove 'selected' class from all mood emojis
-    document.querySelectorAll('.mood-emoji').forEach(emoji => {
-        emoji.classList.remove('selected');
-    });
-    // Add 'selected' class to the clicked emoji
-    element.classList.add('selected');
-    // Save the selected mood
-    chrome.storage.sync.set({lastMood: mood});
-}
-
-function updateWordCount(elements) {
-    const words = elements.journalEntry.value.trim().split(/\s+/).length;
-    elements.wordCount.textContent = `${words} / 100 words`;
 }
 
 function saveEntry(elements) {
@@ -199,14 +222,12 @@ function updateStreak(elements) {
     });
 }
 
-
 function isSameDay(date1, date2) {
     return date1.getFullYear() === date2.getFullYear() &&
            date1.getMonth() === date2.getMonth() &&
            date1.getDate() === date2.getDate();
 }
 
-// Utility function to get a random quote (implement this in utils.js)
 function getRandomQuote() {
     return new Promise((resolve, reject) => {
         fetch(chrome.runtime.getURL('data/quotes.json'))
@@ -221,4 +242,3 @@ function getRandomQuote() {
             });
     });
 }
-
