@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Gratitude Me",
+  "name": "Grateful Me",
   "version": "1.0",
   "description": "A simple gratitude journal extension with daily reminders",
   "permissions": ["storage", "alarms", "notifications"],
@@ -22,5 +22,4 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
-}
-}
+}}

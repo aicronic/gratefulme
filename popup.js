@@ -35,16 +35,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Save entry
     if (elements.saveEntryBtn && elements.journalEntry) {
         elements.saveEntryBtn.addEventListener('click', async () => {
+            // Check if mood selector exists and has a selected mood
+            if (elements.moodSelector) {
+                const selectedMood = elements.moodSelector.querySelector('.selected');
+                if (!selectedMood) {
+                    elements.moodSelector.classList.add('shake');
+                    setTimeout(() => {
+                        elements.moodSelector.classList.remove('shake');
+                    }, 400);
+                    return;
+                }
+            }
+
             const entry = {
                 date: new Date().toISOString(),
                 entry: elements.journalEntry.value,
-                mood: elements.moodSelector ? elements.moodSelector.querySelector('.selected').textContent : null
+                mood: elements.moodSelector ? elements.moodSelector.querySelector('.selected')?.textContent : null
             };
 
             const saved = await appUtils.storage.saveEntry(entry);
             if (saved) {
+                // Clear the form
                 elements.journalEntry.value = '';
                 updateWordCount(elements);
+                
+                // Clear mood selection if mood selector exists
+                if (elements.moodSelector) {
+                    const selectedMoodEmoji = elements.moodSelector.querySelector('.selected');
+                    if (selectedMoodEmoji) {
+                        selectedMoodEmoji.classList.remove('selected');
+                    }
+                }
+                
                 elements.saveEntryBtn.textContent = 'Saved!';
                 setTimeout(() => {
                     elements.saveEntryBtn.textContent = 'Save Entry';

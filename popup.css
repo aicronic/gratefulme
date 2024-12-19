@@ -125,3 +125,14 @@ button:hover {
 #journal-entry, button, .mood-emoji {
     transition: all 0.3s ease;
 }
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.shake {
+    animation: shake 0.4s ease-in-out;
+    border-color: #E91E63 !important;
+}
